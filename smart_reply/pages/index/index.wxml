@@ -1,0 +1,49 @@
+<view class="container">
+  <view class="header">
+    <text>智子在此</text>
+    <image src="./images/logo1.png" class="logo"></image>
+    <text>为您排忧解闷</text>
+  </view>
+  <view class="comment-form" style="margin-top: 60rpx;">
+    <input placeholder="说点啥吧~" value="{{commentInputValue}}" bindinput="handleCommentInput" />
+    <button bindtap="handleSubmit">发言</button>
+  </view>
+  <button bindtap="handleLogin" class="login-button" wx:if="{{!isLoggedIn}}">微信授权登录</button>
+  <button bindtap="handleShowOnlyMyComments" class="show-my-comments-button" wx:if="{{isLoggedIn}}">{{showOnlyMyComments ? '看所有' : '只看我'}}</button>
+  <scroll-view scroll-y="true" bindscrolltolower="onScrollToLower" class="comment-list">
+    <block wx:for="{{comments}}" wx:key="_id">
+      <view class="comment-item">
+        <text>{{item.content}}</text>
+        <text>来自: {{item.author || '隐者'}}</text>
+        <text>时间: {{item.formattedTime}}</text>
+        <text>获赞: {{item.likes.length}}</text>
+     
+        <button bindtap="handleLike" data-comment-id="{{item._id}}">
+      <image src="./images/heart.png" style="width: 30rpx; height: 30rpx;"></image>
+    </button>
+    <view wx:if="{{item.authorOpenid == currentUserOpenid}}">
+    <button bindtap="handleDelete" data-comment-id="{{item._id}}">
+      <image src="./images/delete.png" style="width: 30rpx; height: 30rpx;"></image>
+    </button>
+    <button bindtap="handleTogglePrivacy" data-comment-id="{{item._id}}">
+      <image src="{{item.isPrivate ? './images/lock.png' : './images/unlocked.png'}}" style="width: 30rpx; height: 30rpx;"></image>
+    </button>
+  </view>
+
+        <input type="text" bindinput="handleReplyInput" data-comment-id="{{item._id}}" placeholder="回话~" />
+        <button bindtap="handleReply" data-comment-id="{{item._id}}" style="width:50%;background-color: blue;">回复</button>
+        <view class="replies">
+          <block wx:for="{{item.replies}}" wx:key="index">
+            <view class="reply-item">
+              <text>{{item.userOpenid || '隐者'}} - {{item.content}}</text>
+              <text>时间: {{item.formattedTime}}</text>
+            </view>
+          </block>
+        </view>
+      </view>
+    </block>
+    <view wx:if="{{!hasMore}}" class="no-more-comments">
+      没有更多了
+    </view>
+  </scroll-view>
+</view>
